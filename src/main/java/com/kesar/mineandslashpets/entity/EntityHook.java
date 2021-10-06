@@ -10,14 +10,13 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.inventory.container.HorseInventoryContainer;
-import net.minecraft.inventory.container.IContainerListener;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.GameRules;
@@ -25,7 +24,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
@@ -159,6 +157,30 @@ public class EntityHook {
 
                         event.setCanceled(true);
                         event.setCancellationResult(ActionResultType.SUCCESS);
+                    } else {
+                        ItemStack itemStack = event.getItemStack();
+                        if (itemStack.isFood()) {
+                            int foodHealing = 0;
+                            if (itemStack.getItem().getFood() != null) {
+                                foodHealing = itemStack.getItem().getFood().getHealing();
+                            }
+                            if (foodHealing > 0) {
+                                float currentHP = ((MobEntity) target).getHealth();
+                                float maxHP = ((MobEntity) target).getMaxHealth();
+
+                                if (currentHP < maxHP) {
+                                    World world = target.world;
+                                    world.playSound(null, target.getPosX(), target.getPosY(), target.getPosZ(), ((LivingEntity) target).getEatSound(itemStack), SoundCategory.NEUTRAL, 1.0F, 1.0F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.4F);
+
+                                    ((MobEntity) target).setHealth(currentHP + foodHealing);
+                                    if (!player.isCreative()) {
+                                        itemStack.shrink(1);
+                                    }
+                                    event.setCanceled(true);
+                                    event.setCancellationResult(ActionResultType.SUCCESS);
+                                }
+                            }
+                        }
                     }
                 }
             }

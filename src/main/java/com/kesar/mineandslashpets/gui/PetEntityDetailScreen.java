@@ -73,11 +73,11 @@ public class PetEntityDetailScreen extends ContainerScreen<PetEntityDetailContai
         this.font.drawString(rarityText.getFormattedText(), 97.0F, 18.0F, TextFormatting.BLACK.getColor());
 
         // draw health
-        int currentHp = (int) data.getUnit()
+        int currentHP = (int) data.getUnit()
                 .getCurrentEffectiveHealth(entity, data);
         int maxHP = (int) data.getUnit()
                 .getMaxEffectiveHealth();
-        this.font.drawString(I18n.format("mine-and-slash-pets.word.health") + ": " + currentHp + "/" + maxHP, 97.0F, 28.0F, TextFormatting.BLACK.getColor());
+        this.font.drawString(I18n.format("mine-and-slash-pets.word.health") + ": " + currentHP + "/" + maxHP, 97.0F, 28.0F, TextFormatting.BLACK.getColor());
 
         // draw attack value
         // this.getAttributes().applyAttributeModifiers(itemstack1.getAttributeModifiers(equipmentslottype))
